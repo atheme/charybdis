@@ -288,6 +288,8 @@ struct LocalUser
 	unsigned int sasl_messages;
 	unsigned int sasl_failures;
 	time_t sasl_next_retry;
+
+	char *sni;
 };
 
 #define AUTHC_F_DEFERRED 0x01

@@ -535,6 +535,27 @@ ssl_process_certfp(ssl_ctl_t * ctl, ssl_ctl_buf_t * ctl_buf)
 	client_p->certfp = certfp_string;
 }
 
+
+static void
+ssl_process_sni(ssl_ctl_t * ctl, ssl_ctl_buf_t * ctl_buf)
+{
+	struct Client *client_p;
+	int32_t fd;
+	char *sni_string;
+
+	if(ctl_buf->buflen > 5 + RB_SSL_SNI_LEN)
+		return;
+
+	fd = buf_to_uint32(&ctl_buf->buf[1]);
+	client_p = find_cli_connid_hash(fd);
+	if(client_p == NULL)
+		return;
+	rb_free(client_p->localClient->sni);
+	sni_string = rb_malloc(ctl_buf->buflen - 4);
+	rb_strlcpy(sni_string, &ctl_buf->buf[5], ctl_buf->buflen - 0);
+	client_p->localClient->sni = sni_string;
+}
+
 static void
 ssl_process_cmd_recv(ssl_ctl_t * ctl)
 {
@@ -589,6 +610,9 @@ ssl_process_cmd_recv(ssl_ctl_t * ctl)
 			strncpy(ctl->version, &ctl_buf->buf[1], len);
 		case 'z':
 			ircd_zlib_ok = 0;
+			break;
+		case 'n':
+			ssl_process_sni(ctl, ctl_buf);
 			break;
 		default:
 			ilog(L_MAIN, "Received invalid command from ssld: %s", ctl_buf->buf);

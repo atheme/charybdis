@@ -62,6 +62,7 @@ rb_get_random
 rb_get_sockerr
 rb_get_ssl_certfp
 rb_get_ssl_certfp_file
+rb_get_ssl_sni
 rb_get_ssl_strerror
 rb_get_type
 rb_getmaxconnect

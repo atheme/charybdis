@@ -345,6 +345,13 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 			sendto_one_numeric(source_p, RPL_WHOISCERTFP,
 					form_str(RPL_WHOISCERTFP),
 					target_p->name, target_p->certfp);
+
+		if((source_p == target_p || IsOper(source_p)) &&
+				target_p->localClient != NULL &&
+				target_p->localClient->sni != NULL)
+			sendto_one_numeric(source_p, RPL_WHOISCERTFP,
+					"%s %s :Connected to hostname",
+					target_p->name, target_p->localClient->sni);
 	}
 
 	if(MyClient(target_p))

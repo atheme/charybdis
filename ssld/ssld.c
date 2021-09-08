@@ -696,6 +696,21 @@ ssl_send_certfp(conn_t *conn)
 }
 
 static void
+ssl_send_sni(conn_t *conn)
+{
+	uint8_t buf[5 + RB_SSL_SNI_LEN];
+
+	int len = rb_get_ssl_sni(conn->mod_fd, &buf[5]);
+	if (len == 0)
+		return;
+
+	lrb_assert(len <= RB_SSL_SNI_LEN);
+	buf[0] = 'n';
+	uint32_to_buf(&buf[1], conn->id);
+	mod_cmd_write_queue(conn->ctl, buf, 5 + len);
+}
+
+static void
 ssl_send_open(conn_t *conn)
 {
 	uint8_t buf[5];
@@ -714,6 +729,7 @@ ssl_process_accept_cb(rb_fde_t *F, int status, struct sockaddr *addr, rb_socklen
 	{
 		ssl_send_cipher(conn);
 		ssl_send_certfp(conn);
+		ssl_send_sni(conn);
 		ssl_send_open(conn);
 		conn_mod_read_cb(conn->mod_fd, conn);
 		conn_plain_read_cb(conn->plain_fd, conn);

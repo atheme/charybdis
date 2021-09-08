@@ -522,6 +522,27 @@ rb_get_ssl_strerror(rb_fde_t *const F)
 }
 
 int
+rb_get_ssl_sni(rb_fde_t *F, uint8_t sni[static RB_SSL_SNI_LEN])
+{
+	const char *openssl_sni;
+	size_t n;
+
+	if (F == NULL || F->ssl == NULL)
+		return 0;
+
+	openssl_sni = SSL_get_servername(F->ssl, TLSEXT_NAMETYPE_host_name);
+	if (openssl_sni == NULL)
+		return 0;
+
+	n = snprintf((char *)sni, RB_SSL_SNI_LEN, "%s", openssl_sni);
+
+	if (n == 0 || n > RB_SSL_SNI_LEN || n > INT_MAX)
+		return 0;
+
+	return (int)n;
+}
+
+int
 rb_get_ssl_certfp(rb_fde_t *const F, uint8_t certfp[const RB_SSL_CERTFP_LEN], const int method)
 {
 	if(F == NULL || F->ssl == NULL)
