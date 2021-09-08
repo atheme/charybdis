@@ -884,7 +884,7 @@ send_conf_options(struct Client *source_p)
 				 */
 			case OUTPUT_BOOLEAN_YN:
 				{
-					int option = *((int *) info_table[i].option);
+					bool option = *((bool *) info_table[i].option);
 
 					sendto_one(source_p, ":%s %d %s :%-30s %-16s [%s]",
 							get_id(&me, source_p), RPL_INFO,
@@ -898,7 +898,7 @@ send_conf_options(struct Client *source_p)
 
 			case OUTPUT_BOOLEAN2:
 				{
-					int option = *((int *) info_table[i].option);
+					bool option = *((bool *) info_table[i].option);
 
 					sendto_one(source_p, ":%s %d %s :%-30s %-16s [%s]",
 							me.name, RPL_INFO, source_p->name,
