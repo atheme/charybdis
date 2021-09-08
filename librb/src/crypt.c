@@ -777,6 +777,12 @@ static void   MD5Final (unsigned char [16], MD5_CTX *);
  * a multiple of 4.
  */
 
+#ifdef _AIX
+/* AIX lacks the endian.h header, so reimplement. AIX is always BE. */
+#define htole32(x) __builtin_bswap32(x)
+#define le32toh(x) __builtin_bswap32(x)
+#endif
+
 static void
 Encode (unsigned char *output, uint32_t *input, unsigned int len)
 {

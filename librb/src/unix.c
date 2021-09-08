@@ -45,7 +45,8 @@
 #include <sys/sysctl.h>
 #endif
 
-#if defined(HAVE_SPAWN_H) && defined(HAVE_POSIX_SPAWN)
+/* it dies violently in PASE due to posix_spawnattr_init calling the unimplemented */
+#if defined(HAVE_SPAWN_H) && defined(HAVE_POSIX_SPAWN) && !defined(_AIX)
 #include <spawn.h>
 
 #ifndef __APPLE__
